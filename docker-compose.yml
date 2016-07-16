@@ -50,7 +50,6 @@ services:
 
     # Third agent that can build and test any kind of docker app
     agent-three:
-        privileged: true
         build: ./docker-agent
         links:
             - server
@@ -59,3 +58,5 @@ services:
             - AGENT_KEY="123456789abcdeh"
             - AGENT_ENVIRONMENTS="MyEnvironment"
             - AGENT_RESOURCES="docker"
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
