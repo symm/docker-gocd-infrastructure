@@ -1,14 +1,14 @@
 version: '2'
 services:
     # How you access the GoCD server web ui
-    gateway:
-        build: ./gateway
-        ports:
-            - "8080:80"
-            #- "80:80"
-            #- "443:443"
-        depends_on:
-            - server
+    #gateway:
+    #    build: ./gateway
+    #    ports:
+    #        - "8080:80"
+    #        #- "80:80"
+    #        #- "443:443"
+    #    depends_on:
+    #        - server
 
     # Backend GoCD server
     server:
@@ -16,23 +16,28 @@ services:
         ports:
             - "8153:8153"
             - "8154:8154"
-        #volumes:
-            #- "./data/var/lib/go-server:/var/lib/go-server"
-            #- "./data/var/log/go-server:/var/log/go-server"
-            #- "./data/etc/go:/etc/go"
-            #- "./data/go-addons:/go-addons"
-            #- "./data/var/go:/var/go"
+        #volumes_from:
+        #    - server-config
+
+    server-config:
+        image: busybox:latest
+        volumes:
+            - "./data/var/lib/go-server:/var/lib/go-server"
+            - "./data/var/log/go-server:/var/log/go-server"
+            - "./data/etc/go:/etc/go"
+            - "./data/go-addons:/go-addons"
+            - "./data/var/go:/var/go"
 
     # Agent that can build and test PHP apps
-    agent-one:
-        build: ./php-agent
-        links:
-            - server
-        environment:
-            - GO_SERVER="server"
-            - AGENT_KEY="123456789abcdef"
-            - AGENT_ENVIRONMENTS="myapp"
-            - AGENT_RESOURCES="php,composer,make"
+    #agent-one:
+    #    build: ./php-agent
+    #    links:
+    #        - server
+    #    environment:
+    #        - GO_SERVER="server"
+    #        - AGENT_KEY="123456789abcdef"
+    #        - AGENT_ENVIRONMENTS="myapp"
+    #        - AGENT_RESOURCES="php,composer,make"
 
     # You can have more than one agent
     #agent-two:
@@ -42,3 +47,15 @@ services:
     #    environment:
     #        - GO_SERVER="server"
     #        - AGENT_KEY="123456789abcdeg"
+
+    # Third agent that can build and test any kind of docker app
+    agent-three:
+        privileged: true
+        build: ./docker-agent
+        links:
+            - server
+        environment:
+            - GO_SERVER="server"
+            - AGENT_KEY="123456789abcdeh"
+            - AGENT_ENVIRONMENTS="MyEnvironment"
+            - AGENT_RESOURCES="docker"
