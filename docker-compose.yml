@@ -1,5 +1,16 @@
 version: '2'
 services:
+    # How you access the GoCD server web ui
+    gateway:
+        build: ./gateway
+        ports:
+            - "8080:80"
+            #- "80:80"
+            #- "443:443"
+        depends_on:
+            - server
+
+    # Backend GoCD server
     server:
         image: gocd/gocd-server:latest
         ports:
@@ -12,6 +23,7 @@ services:
             #- "./data/go-addons:/go-addons"
             #- "./data/var/go:/var/go"
 
+    # Agent that can build and test PHP apps
     agent-one:
         build: ./php-agent
         links:
@@ -21,6 +33,8 @@ services:
             - AGENT_KEY="123456789abcdef"
             - AGENT_ENVIRONMENTS="myapp"
             - AGENT_RESOURCES="php,composer,make"
+
+    # You can have more than one agent
     #agent-two:
     #    build: ./php-agent
     #    links:
