@@ -1,0 +1,30 @@
+version: '2'
+services:
+    server:
+        image: gocd/gocd-server:latest
+        ports:
+            - "8153:8153"
+            - "8154:8154"
+        #volumes:
+            #- "./data/var/lib/go-server:/var/lib/go-server"
+            #- "./data/var/log/go-server:/var/log/go-server"
+            #- "./data/etc/go:/etc/go"
+            #- "./data/go-addons:/go-addons"
+            #- "./data/var/go:/var/go"
+
+    agent-one:
+        build: ./php-agent
+        links:
+            - server
+        environment:
+            - GO_SERVER="server"
+            - AGENT_KEY="123456789abcdef"
+            - AGENT_ENVIRONMENTS="myapp"
+            - AGENT_RESOURCES="php,composer,make"
+    #agent-two:
+    #    build: ./php-agent
+    #    links:
+    #        - server
+    #    environment:
+    #        - GO_SERVER="server"
+    #        - AGENT_KEY="123456789abcdeg"
